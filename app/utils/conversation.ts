@@ -80,9 +80,6 @@ const generateAgentGoalsPrompt = async (story: Story): Promise<string> => {
     we are simulating a conversation in which the user wants ${userGoals}. Given this context what are 2 8-10 word goals for the chat agent
 
     ${persona_scenario_prompt_string(persona, scenario)}
-    
-    ## YOUR GOALS
-    ${userGoals}
   `;
 
   const response = await client.chat.completions.create({
