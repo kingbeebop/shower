@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "shower-python"
+version = "0.1.0"
+description = ""
+authors = ["Albert Schweitzer <schweitzer.albert@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+openai = "^1.57.4"
+ipykernel = "^6.29.5"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
