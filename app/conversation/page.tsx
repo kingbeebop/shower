@@ -2,12 +2,14 @@
 
 import { Box, Container, Typography, Paper, Chip, Button } from "@mui/material";
 import { useConversation } from "@11labs/react";
-import { useCallback } from "react";
+import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
+import { useRouter } from 'next/navigation';
 const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 
 export default function Conversation() {
+  const router = useRouter();
   const { currentPersona, currentScenario } = useSelector(
     (state: RootState) => state.conversation
   );
@@ -18,6 +20,13 @@ export default function Conversation() {
     onMessage: (message) => console.log("Message:", message),
     onError: (error) => console.error("Error:", error),
   });
+
+  // Redirect to setup if persona or scenario is not set
+  useEffect(() => {
+    if (!currentPersona?.name || !currentScenario?.name) {
+      router.push('/setup');
+    }
+  }, [currentPersona, currentScenario, router]);
 
   const startConversation = useCallback(async () => {
     try {
@@ -43,6 +52,11 @@ export default function Conversation() {
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
   }, [conversation]);
+
+  // Add safety check for rendering
+  if (!currentPersona?.name || !currentScenario?.name) {
+    return null; // or return a loading state
+  }
 
   return (
     <Container maxWidth="md">

@@ -1,3 +1,4 @@
+"use client";
 
 import { Box, Container, Typography, Stepper, Step, StepLabel, Card, CardContent, FormControl, InputLabel, Select, MenuItem, TextField, Button } from '@mui/material';
 import Link from 'next/link';
@@ -7,6 +8,8 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { AppDispatch } from '../../redux/store'
 import { RootState } from '../../redux/store';
+import PersonaModal from '@/components/modals/PersonaModal';
+import ScenarioModal from '@/components/modals/ScenarioModal';
 
 const personas = [
   'Boss',
@@ -46,8 +49,14 @@ export default function Setup() {
   const personas  = useSelector((state: RootState) => state.persona.personas )
 
   const [formState, setFormState] = useState({
-    persona: '',
-    scenario: '',
+    persona: {
+        name: '',
+        type: ''
+    },
+    scenario: {
+        name: '',
+        type: ''
+    },
     goal: ''
   });
 
@@ -60,9 +69,9 @@ export default function Setup() {
 
   const handleSubmit = () => {
     dispatch(setConversationSetup({
-      persona: formState.persona,
-      scenario: formState.scenario,
-      goal: formState.goal
+        persona: formState.persona,
+        scenario: formState.scenario,
+        goal: formState.goal
     }));
     router.push('/conversation');
   };
@@ -72,8 +81,8 @@ export default function Setup() {
 
   return (
     <Container maxWidth="md">
-      <PersonaModal closeModal={handleClosePersona}></PersonaModal>
-      <ScenarioModal closeModal={handleCloseScenario}></ScenarioModal>
+      {isPersonaModalOpen && <PersonaModal closeModal={handleClosePersona}></PersonaModal>}
+      {isScenarioModalOpen && <ScenarioModal closeModal={handleCloseScenario}></ScenarioModal>}
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom textAlign="center">
           Setup Your Conversation
@@ -104,13 +113,13 @@ export default function Setup() {
                 label="Select Persona"
               >
                 <MenuItem
-                  onClick={() => setNewPersonaModal(true)}
+                  onClick={() => handleOpenPersona()}
                 >
                   + New Persona
                 </MenuItem>
                 {personas.map((persona) => (
-                  <MenuItem key={persona} value={persona}>
-                    {persona}
+                  <MenuItem key={persona.name} value={persona.name}>
+                    {persona.name}
                   </MenuItem>
                 ))}
               </Select>
@@ -126,7 +135,7 @@ export default function Setup() {
                 onChange={handleChange('scenario')}
                 label="Select Scenario"
               >
-                <MenuItem onClick={() => setNewScenarioModal(true)}>
+                <MenuItem onClick={() => handleOpenScenario()}>
                   + New Menu Item
                 </MenuItem>
                 {scenarios.map((scenario) => (
