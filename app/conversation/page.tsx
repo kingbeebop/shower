@@ -6,6 +6,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useRouter } from 'next/navigation';
+import { startConversation as startConversationUtil } from "../utils/conversation";
 
 const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 const API_KEY = process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY || "";
@@ -104,19 +105,7 @@ export default function Conversation() {
 
   const startConversation = useCallback(async () => {
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
-      const result = await conversation.startSession({
-        agentId: AGENT_ID,
-        overrides: {
-          agent: {
-            prompt: {
-              prompt: `You are ${currentPersona?.name} and you are in the ${currentScenario?.name} scenario.`,
-            },
-            firstMessage: `Hey`,
-          },
-        },
-      });
-      console.log("Start session result:", result);
+      const result = await startConversationUtil(conversation, currentPersona, currentScenario);
       setSessionId(result);
     } catch (error) {
       console.error("Failed to start conversation:", error);
