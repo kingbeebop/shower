@@ -1,128 +1,116 @@
-'use client'
+"use client";
 
-import { Box, Container, Typography, Paper, TextField, Button, Avatar, Chip } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
-import { useSelector, useDispatch } from 'react-redux';
-import { RootState } from '../../redux/store';
-import { addMessage } from '../../redux/slices/conversationSlice';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { Box, Container, Typography, Paper, Chip, Button } from "@mui/material";
+import { useConversation } from "@11labs/react";
+import { useCallback } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 
 export default function Conversation() {
-  const dispatch = useDispatch();
-  const router = useRouter();
-  const [newMessage, setNewMessage] = useState('');
-  
-  const { currentPersona, currentScenario, messages } = useSelector(
+  const { currentPersona, currentScenario } = useSelector(
     (state: RootState) => state.conversation
   );
 
-  // Redirect if no persona or scenario is selected
-  if (!currentPersona || !currentScenario) {
-    router.push('/setup');
-    return null;
-  }
+  const conversation = useConversation({
+    onConnect: () => console.log("Connected"),
+    onDisconnect: () => console.log("Disconnected"),
+    onMessage: (message) => console.log("Message:", message),
+    onError: (error) => console.error("Error:", error),
+  });
 
-  const handleSendMessage = () => {
-    if (newMessage.trim()) {
-      dispatch(addMessage({
-        text: newMessage.trim(),
-        sender: 'user'
-      }));
-      setNewMessage('');
-      
-      // Simulate persona response (you can replace this with actual AI response later)
-      setTimeout(() => {
-        dispatch(addMessage({
-          text: "I understand your request. Let's discuss this further.",
-          sender: 'persona'
-        }));
-      }, 1000);
+  const startConversation = useCallback(async () => {
+    try {
+      // Request microphone permission
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Start the conversation with your agent
+      await conversation.startSession({
+        agentId: AGENT_ID,
+        overrides: {
+          agent: {
+            prompt: {
+              prompt: `You are ${currentPersona.name} and you are in the ${currentScenario.name} scenario.`,
+            },
+            firstMessage: `Hey`,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
     }
-  };
+  }, [conversation, currentPersona, currentScenario]);
 
-  const handleKeyPress = (event: React.KeyboardEvent) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
-      handleSendMessage();
-    }
-  };
+  const stopConversation = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
 
   return (
     <Container maxWidth="md">
-      <Box sx={{ my: 4, height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box
+        sx={{
+          my: 4,
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Box
+          sx={{
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Typography variant="h5" component="h1">
-            Conversation with {currentPersona}
+            Conversation with {currentPersona.name}
           </Typography>
           <Chip
-            label={currentScenario}
+            label={currentScenario.name}
             color="primary"
             variant="outlined"
           />
         </Box>
 
-        <Paper 
-          sx={{ 
-            flex: 1, 
-            mb: 2, 
-            p: 2, 
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2
+        <Paper
+          sx={{
+            flex: 1,
+            mb: 2,
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
           }}
         >
-          {messages.map((message) => (
-            <Box 
-              key={message.id}
-              sx={{ 
-                display: 'flex', 
-                alignItems: 'flex-start', 
-                gap: 1,
-                alignSelf: message.sender === 'user' ? 'flex-end' : 'flex-start'
-              }}
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={startConversation}
+              disabled={conversation.status === "connected"}
+              color="primary"
             >
-              {message.sender === 'persona' && (
-                <Avatar>{currentPersona[0]}</Avatar>
-              )}
-              <Paper 
-                sx={{ 
-                  p: 2, 
-                  bgcolor: message.sender === 'user' ? 'primary.light' : 'grey.100',
-                  color: message.sender === 'user' ? 'white' : 'text.primary',
-                  maxWidth: '80%'
-                }}
-              >
-                <Typography>
-                  {message.text}
-                </Typography>
-              </Paper>
-            </Box>
-          ))}
-        </Paper>
+              Start Conversation
+            </Button>
+            <Button
+              variant="contained"
+              onClick={stopConversation}
+              disabled={conversation.status !== "connected"}
+              color="error"
+            >
+              Stop Conversation
+            </Button>
+          </Box>
 
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
-            fullWidth
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            onKeyPress={handleKeyPress}
-            placeholder="Type your message..."
-            variant="outlined"
-            multiline
-            maxRows={4}
-          />
-          <Button 
-            variant="contained" 
-            onClick={handleSendMessage}
-            disabled={!newMessage.trim()}
-            sx={{ minWidth: 'auto', px: 3 }}
-          >
-            <SendIcon />
-          </Button>
-        </Box>
+          <Box sx={{ textAlign: "center" }}>
+            <Typography>Status: {conversation.status}</Typography>
+            <Typography>
+              Agent is {conversation.isSpeaking ? "speaking" : "listening"}
+            </Typography>
+          </Box>
+        </Paper>
       </Box>
     </Container>
   );
-} 
+}
