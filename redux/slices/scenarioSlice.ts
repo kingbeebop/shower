@@ -1,7 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Scenario, ScenarioState } from '../../types/Scenario';
 
-const initialState: ScenarioState = {
+export const initialScenarioState: ScenarioState = {
   scenarios: [
     {
       name: "Asking For A Raise",
@@ -23,7 +23,7 @@ const initialState: ScenarioState = {
 
 const scenarioSlice = createSlice({
   name: 'scenario',
-  initialState,
+  initialState: initialScenarioState,
   reducers: {
     addScenario(state, action: PayloadAction<Scenario>) {
       state.scenarios.push(action.payload);

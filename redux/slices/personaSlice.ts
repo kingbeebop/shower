@@ -3,7 +3,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 import { Persona, PersonaState } from '../../types/Persona';
 
-const initialState: PersonaState = {
+export const initialPersonaState: PersonaState = {
   personas: [
     {
       name: "Boss",
@@ -31,7 +31,7 @@ const initialState: PersonaState = {
 
 const personaSlice = createSlice({
   name: 'persona',
-  initialState,
+  initialState: initialPersonaState,
   reducers: {
     addPersona(state, action: PayloadAction<Omit<Persona, 'id'>>) {
 

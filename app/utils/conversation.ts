@@ -117,7 +117,7 @@ export const startConversation = async (
         prompt: {
           prompt: storyPrompt,
         },
-        firstMessage: `Hey, what's up?`,
+        firstMessage: `Hey...!`,
       },
     },
   });

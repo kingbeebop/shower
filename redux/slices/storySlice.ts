@@ -1,6 +1,8 @@
 import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
 import { Story } from "@/types/Story";
+import { initialScenarioState } from "./scenarioSlice";
+import { initialPersonaState } from "./personaSlice";
 interface StoryState {
   stories: Story[];
   currentStory: Story | null;
@@ -8,30 +10,31 @@ interface StoryState {
 
 
 
-const initialState: StoryState = {
-  stories: [
-  ],
+export const initialStoryState: StoryState = {
+  stories: initialPersonaState.personas.map((persona, index) => ({
+    persona,
+    scenario: initialScenarioState.scenarios[index],
+    userGoals: "",
+    agentGoals: null
+  })),
   currentStory: null,
 };
 
 const storySlice = createSlice({
   name: "story",
-  initialState,
+  initialState: initialStoryState,
   reducers: {
     // Add a new story
     addStory(state, action: PayloadAction<Story>) {
       state.stories.push(action.payload);
     },
-    // Update a story with a new conversation id (now using number IDs)
-    // addConversationToStory(state, action: PayloadAction<{ storyId: number; conversationId: number }>) {
-    //   const story = state.stories.find((s) => s.persona.id === action.payload.storyId);
-    //   if (story) {
-    //     story.conversationIds.push(action.payload.conversationId);
-    //   }
-    // },
+    // Set current story
+    setCurrentStory(state, action: PayloadAction<Story>) {
+      state.currentStory = action.payload;
+    },
   },
 });
 
-export const { addStory } = storySlice.actions;
+export const { addStory, setCurrentStory } = storySlice.actions;
 
 export default storySlice.reducer;
