@@ -13,7 +13,7 @@ export const generateImage = async (prompt: string): Promise<string | null> => {
         },
         {
           headers: {
-            Authorization: `Bearer ${process.env.OPENAI_API_KEY}`,
+            Authorization: `Bearer ${process.env.NEXT_PUBLIC_OPENAI_API_KEY}`,
             "Content-Type": "application/json",
           },
         }
