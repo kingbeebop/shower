@@ -2,11 +2,12 @@ import { Persona } from './Persona';
 import { Scenario } from './Scenario';
 
 export interface Story {
-  persona: Persona | null;
-  scenario: Scenario | null;
-  tolerance: number;
+  persona: Persona;
+  scenario: Scenario;
+  userGoals: string;
+  agentGoals: string | null;
 }
 
 export interface StoryState {
-  story: Story | null;
+  story: Story;
 }

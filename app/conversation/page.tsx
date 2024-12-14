@@ -73,8 +73,8 @@ export default function Conversation() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const { currentPersona, currentScenario } = useSelector(
-    (state: RootState) => state.conversation
+  const { story } = useSelector(
+    (state: RootState) => state.story
   );
 
   const conversation = useConversation({
@@ -98,20 +98,20 @@ export default function Conversation() {
 
   // Redirect to setup if persona or scenario is not set
   useEffect(() => {
-    if (!currentPersona?.name || !currentScenario?.name) {
+    if (!currentStory) {
       router.push("/setup");
     }
-  }, [currentPersona, currentScenario, router]);
+  }, [currentStory, router]);
 
   const startConversation = useCallback(async () => {
     try {
-      const result = await startConversationUtil(conversation, currentPersona, currentScenario);
+      const result = await startConversationUtil(conversation, currentStory);
       setSessionId(result);
     } catch (error) {
       console.error("Failed to start conversation:", error);
       alert("Failed to start conversation. Please try again later.");
     }
-  }, [conversation, currentPersona, currentScenario]);
+  }, [conversation, currentStory]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();

@@ -1,25 +1,44 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Persona } from '../../types/Persona';  // Assuming Persona types are defined elsewhere
-import { Scenario } from '../../types/Scenario';  // Assuming Scenario types are defined elsewhere
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
 
-interface Story {
-  goal: string;
-  persona: Persona;
-  scenario: Scenario;
-  tolerance: number;
-  conversationIds: number[];  // Store conversation ids as numbers
-}
-
+import { Story } from "@/types/Story";
 interface StoryState {
   stories: Story[];
+  currentStory: Story | null;
 }
 
+const DEFAULT_PERSONA = {
+  name: "Ex Wife",
+  tone: "Aggressive",
+  values: "Power, Control, Dominance",
+  biases: "Fear of spiders",
+  characterExemplar: "Mean girls",
+};
+const DEFAULT_SCENARIO = {
+  name: "You are asking for a divorce",
+  context: "You are asking for a divorce",
+  relationship: "You are asking for a divorce",
+};
+const DEFAULT_USER_GOALS = "You are asking for a divorce";
+
 const initialState: StoryState = {
-  stories: [],
+  stories: [
+    {
+      persona: DEFAULT_PERSONA,
+      scenario: DEFAULT_SCENARIO,
+      userGoals: DEFAULT_USER_GOALS,
+      agentGoals: null,
+    },
+  ],
+  currentStory: {
+    persona: DEFAULT_PERSONA,
+    scenario: DEFAULT_SCENARIO,
+    userGoals: DEFAULT_USER_GOALS,
+    agentGoals: null,
+  },
 };
 
 const storySlice = createSlice({
-  name: 'story',
+  name: "story",
   initialState,
   reducers: {
     // Add a new story
@@ -36,6 +55,6 @@ const storySlice = createSlice({
   },
 });
 
-export const { addStory  } = storySlice.actions;
+export const { addStory } = storySlice.actions;
 
 export default storySlice.reducer;
