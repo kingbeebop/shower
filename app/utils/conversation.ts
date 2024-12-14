@@ -3,6 +3,13 @@ import { SessionConfig } from "@11labs/client";
 import { Story } from "@/types/Story";
 import { Persona } from "@/types/Persona";
 import { Scenario } from "@/types/Scenario";
+import OpenAI from "openai";
+
+
+const client = new OpenAI({
+  apiKey: process.env.NEXT_PUBLIC_OPENAI_API_KEY,
+  dangerouslyAllowBrowser: true,
+});
 
 type ConversationObject = {
   startSession: (options: SessionConfig & HookOptions) => Promise<string>;
@@ -35,8 +42,14 @@ const persona_scenario_prompt_string = (
   `;
 };
 
-const generateStoryPrompt = (story: Story): string => {
-  const { persona, scenario, agentGoals } = story;
+const generateStoryPrompt = (story: Story, agentGoals: string): string => {
+  const { persona, scenario } = story;
+  if (!agentGoals) {
+    throw new Error(
+      "Agent goals must be generated before generating story prompt"
+    );
+  }
+
   return `
   ## Context
   This is a role-playing scenario where the user and you are working through difficult conversations through realistic role-playing simulations.
@@ -61,9 +74,9 @@ const generateStoryPrompt = (story: Story): string => {
   `;
 };
 
-const generateAgentGoalsPrompt = (story: Story): string => {
+const generateAgentGoalsPrompt = async (story: Story): Promise<string> => {
   const { persona, scenario, userGoals } = story;
-  return `
+  const prompt = `
     we are simulating a conversation in which the user wants to get a raise. Given this context what are 2 8-10 word goals for the chat agent
 
     ${persona_scenario_prompt_string(persona, scenario)}
@@ -71,6 +84,15 @@ const generateAgentGoalsPrompt = (story: Story): string => {
     ## YOUR GOALS
     ${userGoals}
   `;
+
+  const response = await client.chat.completions.create({
+    model: "gpt-4o-mini",
+    messages: [{ role: "user", content: prompt }],
+    temperature: 0.0,
+    max_tokens: 100,
+  });
+
+  return response.choices[0].message.content || "";
 };
 
 export const startConversation = async (
@@ -81,8 +103,12 @@ export const startConversation = async (
     throw new Error("Story must be provided");
   }
 
+  const agentGoals = await generateAgentGoalsPrompt(currentStory);
+
+  console.log("Agent goals:", agentGoals);
+
   await navigator.mediaDevices.getUserMedia({ audio: true });
-  const storyPrompt = generateStoryPrompt(currentStory);
+  const storyPrompt = generateStoryPrompt(currentStory, agentGoals);
 
   const result = await conversation.startSession({
     agentId: AGENT_ID,
