@@ -1,17 +1,26 @@
 "use client";
 
-import { Box, Container, Typography, Paper, Chip, Button, CircularProgress } from "@mui/material";
+import {
+  Box,
+  Container,
+  Typography,
+  Paper,
+  Chip,
+  Button,
+  CircularProgress,
+} from "@mui/material";
 import { useConversation } from "@11labs/react";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
-import { useRouter } from 'next/navigation';
+import { useRouter } from "next/navigation";
 import { startConversation as startConversationUtil } from "../utils/conversation";
 import { generateImage } from "./functions";
 
 const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 const API_KEY = process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY || "";
 const CONVERSATION_LOAD_TIME = 3000;
+
 interface Message {
   role: string;
   message: string;
@@ -74,19 +83,18 @@ export default function Conversation() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const { currentStory } = useSelector(
-    (state: RootState) => state.story
-  );
-  const [fetchingMessages, setFetchingMessages] = useState(false)
+  const { currentStory } = useSelector((state: RootState) => state.story);
+  const [fetchingMessages, setFetchingMessages] = useState(false);
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
-  const [animationActive, setAnimationActive] = useState(true); // New state for animation
-
+  const [animationActive, setAnimationActive] = useState(true);
 
   const conversation = useConversation({
     onConnect: () => console.log("Connected"),
     onDisconnect: async () => {
       if (sessionId) {
-        await new Promise(resolve => setTimeout(resolve, CONVERSATION_LOAD_TIME));
+        await new Promise((resolve) =>
+          setTimeout(resolve, CONVERSATION_LOAD_TIME)
+        );
         try {
           const finalMessages = await getConversationDetails(sessionId);
           setMessages(finalMessages);
@@ -100,7 +108,6 @@ export default function Conversation() {
     onError: (error) => console.error("Error:", error),
   });
 
-  // Redirect to setup if persona or scenario is not set
   useEffect(() => {
     if (!currentStory) {
       router.push("/setup");
@@ -109,18 +116,21 @@ export default function Conversation() {
 
   useEffect(() => {
     async function setImage() {
-      const imageUrl = await generateImage('We want a frontal facing image of the character. Generate an image of the character' + currentStory?.persona.name);
-      console.log("background image")
+      const imageUrl = await generateImage(
+        "We want a frontal facing image of the character. Generate an image of the character" +
+          currentStory?.persona.name
+      );
+      console.log("background image");
       setBackgroundImage(imageUrl);
     }
-    setImage()
-  }, [currentStory])
+    setImage();
+  }, [currentStory]);
 
   const startConversation = useCallback(async () => {
     try {
       const result = await startConversationUtil(conversation, currentStory);
       setSessionId(result);
-      setAnimationActive(true); 
+      setAnimationActive(true);
     } catch (error) {
       console.error("Failed to start conversation:", error);
       alert("Failed to start conversation. Please try again later.");
@@ -128,23 +138,24 @@ export default function Conversation() {
   }, [conversation, currentStory]);
 
   const stopConversation = useCallback(async () => {
-    setFetchingMessages(true)
+    setFetchingMessages(true);
     setAnimationActive(false);
     await conversation.endSession();
-    
+
     if (sessionId) {
-      await new Promise(resolve => setTimeout(resolve, CONVERSATION_LOAD_TIME));
+      await new Promise((resolve) =>
+        setTimeout(resolve, CONVERSATION_LOAD_TIME)
+      );
       try {
         const finalMessages = await getConversationDetails(sessionId);
         setMessages(finalMessages);
         console.log("finalMessages", finalMessages);
         setFetchingMessages(false);
-        // router.push("/review")
       } catch (error) {
         console.error("Failed to fetch final conversation details:", error);
       }
     }
-    
+
     setSessionId(null);
   }, [conversation, sessionId]);
 
@@ -180,129 +191,111 @@ export default function Conversation() {
           />
         </Box>
 
-        <Paper
+        {/* Background Container */}
+        <Box
           sx={{
             flex: 1,
-            mb: 2,
-            p: 2,
-            display: "flex",
-            flexDirection: "column",
-            overflowY: "auto",
-            justifyContent: fetchingMessages ? "center" : "flex-start",
-            alignItems: fetchingMessages ? "center" : "stretch",
-            backgroundImage: backgroundImage
-              ? `url(${backgroundImage})`
-              : "none",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-            animation: backgroundImage && animationActive ? "pulse 1s ease-in-out infinite alternate" : "none",
-            "@keyframes pulse": {
-              "0%": {
-                transform: "scale(1)",
-              },
-              "100%": {
-                transform: "scale(1.1)",
-              },
-            },
+            position: "relative",
+            overflow: "hidden",
+            borderRadius: 2,
           }}
         >
-          {/* Messages display */}
-
-          <Paper
-  sx={{
-    flex: 1,
-    mb: 2,
-    p: 2,
-    display: "flex",
-    flexDirection: "column",
-    overflowY: "auto",
-    justifyContent: fetchingMessages ? "center" : "flex-start", // Center content when fetching
-    alignItems: fetchingMessages ? "center" : "stretch", // Align horizontally to center when fetching
-    backgroundImage: backgroundImage
-              ? `url(${backgroundImage})`
-              : "none",
-            backgroundSize: "cover",
-            backgroundPosition: "center",
-  }}
->
-  
-  {fetchingMessages ? (
-    <Box
-      sx={{
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        justifyContent: "center",
-        p: 4, // Add padding around CircularProgress
-      }}
-    >
-      <CircularProgress />
-      <Typography sx={{ mt: 2 }} variant="body1">
-        Loading messages...
-      </Typography>
-    </Box>
-  ) : (
-    // Background of this box should be generated dalle image
-    <Box sx={{ flex: 1, mb: 2 }} >
-      {messages.map((msg, index) => (
-        <Box
-          key={index}
-          sx={{
-            mb: 1,
-            p: 1,
-            backgroundColor: msg.role === "user" ? "#f0f0f0" : "#e3f2fd",
-            borderRadius: 1,
-          }}
-        >
-          <Typography variant="body1">
-            <strong>{msg.role}:</strong> {msg.message}
-          </Typography>
-        </Box>
-      ))}
-    </Box>
-  )}
-</Paper>
-
-
-          {/* Controls */}
+          {/* Background Image */}
           <Box
             sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              right: 0,
+              bottom: 0,
+              backgroundImage: backgroundImage
+                ? `url(${backgroundImage})`
+                : "none",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              animation:
+                backgroundImage && animationActive
+                  ? "pulse 1s ease-in-out infinite alternate"
+                  : "none",
+              zIndex: 0,
+              "@keyframes pulse": {
+                "0%": { transform: "scale(1)" },
+                "100%": { transform: "scale(1.1)" },
+              },
+            }}
+          />
+
+          {/* Foreground Content */}
+          <Box
+            sx={{
+              position: "relative",
+              zIndex: 1,
               display: "flex",
               flexDirection: "column",
-              alignItems: "center",
-              gap: 2,
+              height: "100%",
+              p: 2,
             }}
           >
-            <Box sx={{ display: "flex", gap: 2 }}>
-              <Button
-                variant="contained"
-                onClick={startConversation}
-                disabled={conversation.status === "connected"}
-                color="primary"
+            {fetchingMessages ? (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flex: 1,
+                }}
               >
-                Start Conversation
-              </Button>
-              <Button
-                variant="contained"
-                onClick={stopConversation}
-                disabled={conversation.status !== "connected"}
-                color="error"
-              >
-                Stop Conversation
-              </Button>
-            </Box>
-
-            <Box sx={{ textAlign: "center" }}>
-              <Typography>Status: {conversation.status}</Typography>
-              <Typography>
-                Agent is {conversation.isSpeaking ? "speaking" : "listening"}
-              </Typography>
-              {sessionId && <Typography>Session ID: {sessionId}</Typography>}
-            </Box>
+                <CircularProgress />
+                <Typography sx={{ mt: 2 }}>Loading messages...</Typography>
+              </Box>
+            ) : (
+              <Box sx={{ flex: 1, overflowY: "auto" }}>
+                {messages.map((msg, index) => (
+                  <Box
+                    key={index}
+                    sx={{
+                      mb: 1,
+                      p: 1,
+                      backgroundColor:
+                        msg.role === "user" ? "#f0f0f0" : "#e3f2fd",
+                      borderRadius: 1,
+                    }}
+                  >
+                    <Typography variant="body1">
+                      <strong>{msg.role}:</strong> {msg.message}
+                    </Typography>
+                  </Box>
+                ))}
+              </Box>
+            )}
           </Box>
-        </Paper>
+        </Box>
 
-        
+        {/* Controls */}
+        <Box sx={{ display: "flex", gap: 2, mt: 2 }}>
+          <Button
+            variant="contained"
+            onClick={startConversation}
+            disabled={conversation.status === "connected"}
+          >
+            Start Conversation
+          </Button>
+          <Button
+            variant="contained"
+            onClick={stopConversation}
+            disabled={conversation.status !== "connected"}
+            color="error"
+          >
+            Stop Conversation
+          </Button>
+        </Box>
+        <Box sx={{ textAlign: "center", mt: 2 }}>
+          <Typography>Status: {conversation.status}</Typography>
+          <Typography>
+            Agent is {conversation.isSpeaking ? "speaking" : "listening"}
+          </Typography>
+          {sessionId && <Typography>Session ID: {sessionId}</Typography>}
+        </Box>
       </Box>
     </Container>
   );
