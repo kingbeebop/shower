@@ -214,7 +214,7 @@ export default function Home() {
                         {story.scenario.name}
                       </Typography>
                       <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        Goal: {story.userGoals}
+                        Goal: {story.scenario.context.slice(0, 100)}...
                       </Typography>
                     </CardContent>
                   </CardActionArea>
