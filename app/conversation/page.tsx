@@ -1,6 +1,6 @@
 "use client";
 
-import { Box, Container, Typography, Paper, Chip, Button } from "@mui/material";
+import { Box, Container, Typography, Paper, Chip, Button, CircularProgress } from "@mui/material";
 import { useConversation } from "@11labs/react";
 import { useCallback, useEffect, useState } from "react";
 import { useSelector } from "react-redux";
@@ -75,11 +75,11 @@ export default function Conversation() {
   const { currentPersona, currentScenario } = useSelector(
     (state: RootState) => state.conversation
   );
+  const [fetchingMessages, setFetchingMessages] = useState(false)
 
   const conversation = useConversation({
     onConnect: () => console.log("Connected"),
     onDisconnect: async () => {
-      console.log("Disconnected");
       if (sessionId) {
         await new Promise(resolve => setTimeout(resolve, CONVERSATION_LOAD_TIME));
         try {
@@ -101,6 +101,10 @@ export default function Conversation() {
       router.push("/setup");
     }
   }, [currentPersona, currentScenario, router]);
+
+  useEffect(() => {
+    console.log(fetchingMessages)
+  }, [])
 
   const startConversation = useCallback(async () => {
     try {
@@ -125,6 +129,7 @@ export default function Conversation() {
   }, [conversation, currentPersona, currentScenario]);
 
   const stopConversation = useCallback(async () => {
+    setFetchingMessages(true)
     await conversation.endSession();
     
     if (sessionId) {
@@ -133,6 +138,8 @@ export default function Conversation() {
         const finalMessages = await getConversationDetails(sessionId);
         setMessages(finalMessages);
         console.log("finalMessages", finalMessages);
+        setFetchingMessages(false);
+        // router.push("/review")
       } catch (error) {
         console.error("Failed to fetch final conversation details:", error);
       }
@@ -184,23 +191,55 @@ export default function Conversation() {
           }}
         >
           {/* Messages display */}
-          <Box sx={{ flex: 1, mb: 2 }}>
-            {messages.map((msg, index) => (
-              <Box
-                key={index}
-                sx={{
-                  mb: 1,
-                  p: 1,
-                  backgroundColor: msg.role === "user" ? "#f0f0f0" : "#e3f2fd",
-                  borderRadius: 1,
-                }}
-              >
-                <Typography variant="body1">
-                  <strong>{msg.role}:</strong> {msg.message}
-                </Typography>
-              </Box>
-            ))}
-          </Box>
+
+          <Paper
+  sx={{
+    flex: 1,
+    mb: 2,
+    p: 2,
+    display: "flex",
+    flexDirection: "column",
+    overflowY: "auto",
+    justifyContent: fetchingMessages ? "center" : "flex-start", // Center content when fetching
+    alignItems: fetchingMessages ? "center" : "stretch", // Align horizontally to center when fetching
+  }}
+>
+  {fetchingMessages ? (
+    <Box
+      sx={{
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+        p: 4, // Add padding around CircularProgress
+      }}
+    >
+      <CircularProgress />
+      <Typography sx={{ mt: 2 }} variant="body1">
+        Loading messages...
+      </Typography>
+    </Box>
+  ) : (
+    <Box sx={{ flex: 1, mb: 2 }}>
+      {messages.map((msg, index) => (
+        <Box
+          key={index}
+          sx={{
+            mb: 1,
+            p: 1,
+            backgroundColor: msg.role === "user" ? "#f0f0f0" : "#e3f2fd",
+            borderRadius: 1,
+          }}
+        >
+          <Typography variant="body1">
+            <strong>{msg.role}:</strong> {msg.message}
+          </Typography>
+        </Box>
+      ))}
+    </Box>
+  )}
+</Paper>
+
 
           {/* Controls */}
           <Box
@@ -239,6 +278,8 @@ export default function Conversation() {
             </Box>
           </Box>
         </Paper>
+
+        
       </Box>
     </Container>
   );
