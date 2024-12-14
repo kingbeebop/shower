@@ -8,25 +8,41 @@ import {
   Card,
   CardContent,
   CardActionArea,
-  Icon,
+  useTheme,
 } from "@mui/material";
 import Link from "next/link";
 import { useSelector, useDispatch } from "react-redux";
 import { RootState } from "../redux/store";
 import { setCurrentStory } from "../redux/slices/storySlice";
 import { useRouter } from "next/navigation";
-import PersonIcon from '@mui/icons-material/Person';
 import BusinessIcon from '@mui/icons-material/Business';
-import PsychologyIcon from '@mui/icons-material/Psychology';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import GroupsIcon from '@mui/icons-material/Groups';
-import TrackChangesIcon from '@mui/icons-material/TrackChanges';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
+import SettingsIcon from '@mui/icons-material/Settings';
 import StarIcon from '@mui/icons-material/Star';
+
+const GradientBox = ({ children, ...props }) => (
+  <Box
+    sx={{
+      background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+      borderRadius: 2,
+      p: 2,
+      color: 'white',
+      ...props.sx
+    }}
+    {...props}
+  >
+    {children}
+  </Box>
+);
 
 export default function Home() {
   const { stories } = useSelector((state: RootState) => state.story);
   const dispatch = useDispatch();
   const router = useRouter();
+  const theme = useTheme();
 
   const handleStorySelect = (story) => {
     dispatch(setCurrentStory(story));
@@ -34,224 +50,310 @@ export default function Home() {
   };
 
   return (
-    <Container maxWidth="lg">
-      {/* Hero Section */}
-      <Box sx={{ my: 6, textAlign: "center" }}>
-        <Typography variant="h2" component="h1" gutterBottom>
-          Shower Exposure
-        </Typography>
-        <Typography variant="h5" color="text.secondary" paragraph>
-          Become who you want to be through simulated conversations
-        </Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 600, mx: "auto", mb: 6 }}>
-          Practice difficult conversations in a safe environment. Our AI-powered simulator helps you prepare for real-world scenarios with personalized feedback.
-        </Typography>
-      </Box>
-
-      {/* Featured Scenarios */}
-      <Grid container spacing={4} sx={{ mb: 8 }}>
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <BusinessIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6">Workplace Dynamics</Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                Master difficult conversations with your boss, colleagues, or clients.
-              </Typography>
-              <Box sx={{ mt: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <ArrowForwardIosIcon sx={{ fontSize: 14, color: 'primary.main', mr: 1 }} />
-                  <Typography variant="body2">Asking for a raise</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <ArrowForwardIosIcon sx={{ fontSize: 14, color: 'primary.main', mr: 1 }} />
-                  <Typography variant="body2">Project negotiations</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <PersonIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6">Personal Relationships</Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                Navigate sensitive conversations with partners, family, and friends.
-              </Typography>
-              <Box sx={{ mt: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <ArrowForwardIosIcon sx={{ fontSize: 14, color: 'primary.main', mr: 1 }} />
-                  <Typography variant="body2">Breaking up conversations</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <ArrowForwardIosIcon sx={{ fontSize: 14, color: 'primary.main', mr: 1 }} />
-                  <Typography variant="body2">Resolving conflicts</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-
-        <Grid item xs={12} md={4}>
-          <Card sx={{ height: '100%', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <PsychologyIcon color="primary" sx={{ mr: 1 }} />
-                <Typography variant="h6">Personal Growth</Typography>
-              </Box>
-              <Typography variant="body2" color="text.secondary" paragraph>
-                Face your fears and overcome personal challenges.
-              </Typography>
-              <Box sx={{ mt: 2 }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', mb: 1 }}>
-                  <ArrowForwardIosIcon sx={{ fontSize: 14, color: 'primary.main', mr: 1 }} />
-                  <Typography variant="body2">Confronting phobias</Typography>
-                </Box>
-                <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                  <ArrowForwardIosIcon sx={{ fontSize: 14, color: 'primary.main', mr: 1 }} />
-                  <Typography variant="body2">Building confidence</Typography>
-                </Box>
-              </Box>
-            </CardContent>
-          </Card>
-        </Grid>
-      </Grid>
-
-      {/* How It Works */}
-      <Box sx={{ mb: 8 }}>
-        <Typography variant="h4" align="center" gutterBottom>
-          How It Works
-        </Typography>
-        <Grid container spacing={4} sx={{ mt: 2 }}>
-          <Grid item xs={12} md={4}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Box sx={{ 
-                bgcolor: 'primary.light', 
-                width: 64, 
-                height: 64, 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                mx: 'auto',
-                mb: 2
-              }}>
-                <GroupsIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-              </Box>
-              <Typography variant="h6" gutterBottom>1. Create Persona</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Define who you want to practice talking with. Choose from common relationships or create custom personas.
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Box sx={{ 
-                bgcolor: 'primary.light', 
-                width: 64, 
-                height: 64, 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                mx: 'auto',
-                mb: 2
-              }}>
-                <TrackChangesIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-              </Box>
-              <Typography variant="h6" gutterBottom>2. Set Scenario</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Choose the type of conversation to practice and set your goals for the interaction.
-              </Typography>
-            </Box>
-          </Grid>
-
-          <Grid item xs={12} md={4}>
-            <Box sx={{ textAlign: 'center' }}>
-              <Box sx={{ 
-                bgcolor: 'primary.light', 
-                width: 64, 
-                height: 64, 
-                borderRadius: '50%', 
-                display: 'flex', 
-                alignItems: 'center', 
-                justifyContent: 'center',
-                mx: 'auto',
-                mb: 2
-              }}>
-                <StarIcon sx={{ fontSize: 32, color: 'primary.main' }} />
-              </Box>
-              <Typography variant="h6" gutterBottom>3. Practice</Typography>
-              <Typography variant="body2" color="text.secondary">
-                Engage in realistic dialogue with AI-powered personas and receive feedback on your approach.
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </Box>
-
-      {/* Existing Stories */}
-      {stories.length > 0 && (
-        <Box sx={{ mb: 8 }}>
-          <Typography variant="h4" align="center" gutterBottom>
-            Your Scenarios
+    <Box sx={{ 
+      minHeight: '100vh',
+      background: 'linear-gradient(180deg, #f5f5f5 0%, #ffffff 100%)',
+      pt: 4
+    }}>
+      <Container maxWidth="lg">
+        {/* Hero Section */}
+        <Box sx={{ 
+          my: 6, 
+          textAlign: "center",
+          position: 'relative',
+          '&::after': {
+            content: '""',
+            position: 'absolute',
+            top: -40,
+            right: -100,
+            width: 200,
+            height: 200,
+            background: 'radial-gradient(circle, rgba(33, 150, 243, 0.1) 0%, rgba(33, 150, 243, 0) 70%)',
+            zIndex: -1,
+            borderRadius: '50%'
+          }
+        }}>
+          <Typography 
+            variant="h2" 
+            component="h1" 
+            gutterBottom
+            sx={{
+              fontWeight: 700,
+              background: 'linear-gradient(135deg, #1976d2 0%, #2196f3 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent'
+            }}
+          >
+            Shower Exposure
           </Typography>
-          <Grid container spacing={3}>
-            {stories.map((story, index) => (
+          <Typography variant="h5" color="text.secondary" paragraph>
+            Become who you want to be through simulated conversations
+          </Typography>
+          <Typography 
+            variant="body1" 
+            sx={{ 
+              maxWidth: 600, 
+              mx: "auto", 
+              mb: 6,
+              color: 'text.secondary',
+              lineHeight: 1.8
+            }}
+          >
+            Practice difficult conversations in a safe environment. Our AI-powered simulator
+            helps you prepare for real-world scenarios with personalized feedback.
+          </Typography>
+        </Box>
+
+        {/* Featured Scenarios */}
+        <Grid container spacing={4} sx={{ mb: 8 }}>
+          {[
+            {
+              icon: <BusinessIcon />,
+              title: "Workplace Dynamics",
+              description: "Master difficult conversations with your boss, colleagues, or clients.",
+              items: ["Asking for a raise", "Project negotiations"]
+            },
+            {
+              icon: <GroupsIcon />,
+              title: "Personal Relationships",
+              description: "Navigate sensitive conversations with partners, family, and friends.",
+              items: ["Breaking up conversations", "Resolving conflicts"]
+            },
+            {
+              icon: <PsychologyIcon />,
+              title: "Personal Growth",
+              description: "Face your fears and overcome personal challenges.",
+              items: ["Confronting phobias", "Building confidence"]
+            }
+          ].map((category, index) => (
+            <Grid item xs={12} md={4} key={index}>
+              <Card 
+                sx={{ 
+                  height: '100%', 
+                  transition: 'all 0.3s ease-in-out',
+                  '&:hover': {
+                    transform: 'translateY(-4px)',
+                    boxShadow: theme.shadows[8]
+                  },
+                  border: '1px solid',
+                  borderColor: 'divider',
+                  borderRadius: 2,
+                  overflow: 'hidden'
+                }}
+              >
+                <CardContent>
+                  <Box sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    mb: 2,
+                    p: 1,
+                    borderRadius: 1,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+                    color: 'white'
+                  }}>
+                    {category.icon}
+                    <Typography variant="h6" sx={{ ml: 1 }}>{category.title}</Typography>
+                  </Box>
+                  <Typography variant="body2" color="text.secondary" paragraph>
+                    {category.description}
+                  </Typography>
+                  <Box sx={{ mt: 2 }}>
+                    {category.items.map((item, idx) => (
+                      <Box 
+                        key={idx} 
+                        sx={{ 
+                          display: 'flex', 
+                          alignItems: 'center', 
+                          mb: 1,
+                          p: 1,
+                          borderRadius: 1,
+                          '&:hover': {
+                            bgcolor: 'action.hover'
+                          }
+                        }}
+                      >
+                        <ChevronRightIcon sx={{ fontSize: 18, color: 'primary.main', mr: 1 }} />
+                        <Typography variant="body2">{item}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* How It Works */}
+        <Box sx={{ mb: 8, position: 'relative' }}>
+          <Typography 
+            variant="h4" 
+            align="center" 
+            gutterBottom
+            sx={{ 
+              fontWeight: 700,
+              position: 'relative',
+              '&::after': {
+                content: '""',
+                position: 'absolute',
+                bottom: -8,
+                left: '50%',
+                transform: 'translateX(-50%)',
+                width: 60,
+                height: 4,
+                borderRadius: 2,
+                bgcolor: 'primary.main'
+              }
+            }}
+          >
+            How It Works
+          </Typography>
+          <Grid container spacing={4} sx={{ mt: 4 }}>
+            {[
+              {
+                icon: <EmojiPeopleIcon />,
+                title: "1. Create Persona",
+                description: "Define who you want to practice talking with. Choose from common relationships or create custom personas."
+              },
+              {
+                icon: <SettingsIcon />,
+                title: "2. Set Scenario",
+                description: "Choose the type of conversation to practice and set your goals for the interaction."
+              },
+              {
+                icon: <StarIcon />,
+                title: "3. Practice",
+                description: "Engage in realistic dialogue with AI-powered personas and receive feedback on your approach."
+              }
+            ].map((step, index) => (
               <Grid item xs={12} md={4} key={index}>
-                <Card>
-                  <CardActionArea onClick={() => handleStorySelect(story)}>
-                    <CardContent>
-                      <Typography variant="h6">{story.persona.name}</Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        {story.scenario.name}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-                        Goal: {story.scenario.context.slice(0, 100)}...
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
+                <Box sx={{ 
+                  textAlign: 'center',
+                  position: 'relative',
+                  '&::after': index !== 2 ? {
+                    content: '""',
+                    position: 'absolute',
+                    top: '30%',
+                    right: '-10%',
+                    width: '20%',
+                    height: 2,
+                    bgcolor: 'divider',
+                    display: { xs: 'none', md: 'block' }
+                  } : {}
+                }}>
+                  <Box sx={{ 
+                    width: 80,
+                    height: 80,
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    mx: 'auto',
+                    mb: 2,
+                    background: `linear-gradient(135deg, ${theme.palette.primary.light} 0%, ${theme.palette.primary.main} 100%)`,
+                    boxShadow: 4,
+                    color: 'white'
+                  }}>
+                    {step.icon}
+                  </Box>
+                  <Typography variant="h6" gutterBottom sx={{ fontWeight: 600 }}>
+                    {step.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.8 }}>
+                    {step.description}
+                  </Typography>
+                </Box>
               </Grid>
             ))}
           </Grid>
         </Box>
-      )}
 
-      {/* Floating CTA Button */}
-      <Box sx={{ 
-        position: 'fixed', 
-        bottom: 32, 
-        left: 0, 
-        right: 0, 
-        textAlign: 'center', 
-        zIndex: 1000
-      }}>
-        <Button
-          component={Link}
-          href="/setup"
-          variant="contained"
-          size="large"
-          sx={{ 
-            px: 4, 
-            py: 2,
-            boxShadow: 3,
-            '&:hover': { boxShadow: 6 }
-          }}
-        >
-          {stories.length > 0 ? 'Make New Scenario' : 'Get Started'}
-        </Button>
-      </Box>
+        {/* Your Scenarios */}
+        {stories.length > 0 && (
+          <Box sx={{ mb: 8 }}>
+            <Typography 
+              variant="h4" 
+              align="center" 
+              gutterBottom
+              sx={{ fontWeight: 700 }}
+            >
+              Your Scenarios
+            </Typography>
+            <Grid container spacing={3}>
+              {stories.map((story, index) => (
+                <Grid item xs={12} md={4} key={index}>
+                  <Card 
+                    sx={{ 
+                      transition: 'all 0.3s ease-in-out',
+                      '&:hover': {
+                        transform: 'translateY(-4px)',
+                        boxShadow: theme.shadows[8]
+                      },
+                      borderRadius: 2
+                    }}
+                  >
+                    <CardActionArea onClick={() => handleStorySelect(story)}>
+                      <CardContent>
+                        <Typography variant="h6" gutterBottom>
+                          {story.persona.name}
+                        </Typography>
+                        <Typography variant="body2" color="text.secondary">
+                          {story.scenario.name}
+                        </Typography>
+                        <Typography 
+                          variant="body2" 
+                          sx={{ 
+                            mt: 2,
+                            p: 1,
+                            borderRadius: 1,
+                            bgcolor: 'action.hover'
+                          }}
+                        >
+                          Goal: {story.scenario.context.slice(0, 100)}...
+                        </Typography>
+                      </CardContent>
+                    </CardActionArea>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </Box>
+        )}
 
-      {/* Bottom spacing to prevent content from being hidden behind floating button */}
-      <Box sx={{ height: 96 }} />
-    </Container>
+        {/* Floating CTA Button */}
+        <Box sx={{ 
+          position: 'fixed', 
+          bottom: 32, 
+          left: 0, 
+          right: 0, 
+          textAlign: 'center', 
+          zIndex: 1000
+        }}>
+          <Button
+            component={Link}
+            href="/setup"
+            variant="contained"
+            size="large"
+            sx={{ 
+              px: 6,
+              py: 2,
+              borderRadius: 3,
+              background: 'linear-gradient(135deg, #2196f3 0%, #1976d2 100%)',
+              boxShadow: theme.shadows[4],
+              '&:hover': {
+                background: 'linear-gradient(135deg, #1976d2 0%, #1565c0 100%)',
+                boxShadow: theme.shadows[8],
+                transform: 'translateY(-2px)'
+              },
+              transition: 'all 0.3s ease-in-out'
+            }}
+          >
+            {stories.length > 0 ? 'Make New Scenario' : 'Get Started'}
+          </Button>
+        </Box>
+
+        {/* Bottom spacing */}
+        <Box sx={{ height: 96 }} />
+      </Container>
+    </Box>
   );
 }
