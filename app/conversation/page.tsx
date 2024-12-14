@@ -73,7 +73,7 @@ export default function Conversation() {
   const router = useRouter();
   const [sessionId, setSessionId] = useState<string | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
-  const { story } = useSelector(
+  const { currentStory } = useSelector(
     (state: RootState) => state.story
   );
   const [fetchingMessages, setFetchingMessages] = useState(false)
@@ -137,7 +137,7 @@ export default function Conversation() {
     setSessionId(null);
   }, [conversation, sessionId]);
 
-  if (!currentPersona?.name || !currentScenario?.name) {
+  if (!currentStory?.persona?.name || !currentStory?.scenario.name) {
     return null;
   }
 
@@ -160,10 +160,10 @@ export default function Conversation() {
           }}
         >
           <Typography variant="h5" component="h1">
-            Conversation with {currentPersona?.name}
+            Conversation with {currentStory?.persona.name}
           </Typography>
           <Chip
-            label={currentScenario?.name}
+            label={currentStory?.scenario.name}
             color="primary"
             variant="outlined"
           />
