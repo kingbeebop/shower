@@ -77,7 +77,7 @@ const generateStoryPrompt = (story: Story, agentGoals: string): string => {
 const generateAgentGoalsPrompt = async (story: Story): Promise<string> => {
   const { persona, scenario, userGoals } = story;
   const prompt = `
-    we are simulating a conversation in which the user wants to get a raise. Given this context what are 2 8-10 word goals for the chat agent
+    we are simulating a conversation in which the user wants ${userGoals}. Given this context what are 2 8-10 word goals for the chat agent
 
     ${persona_scenario_prompt_string(persona, scenario)}
     
