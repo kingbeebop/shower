@@ -79,6 +79,8 @@ export default function Conversation() {
   );
   const [fetchingMessages, setFetchingMessages] = useState(false)
   const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
+  const [animationActive, setAnimationActive] = useState(true); // New state for animation
+
 
   const conversation = useConversation({
     onConnect: () => console.log("Connected"),
@@ -118,6 +120,7 @@ export default function Conversation() {
     try {
       const result = await startConversationUtil(conversation, currentStory);
       setSessionId(result);
+      setAnimationActive(true); 
     } catch (error) {
       console.error("Failed to start conversation:", error);
       alert("Failed to start conversation. Please try again later.");
@@ -126,6 +129,7 @@ export default function Conversation() {
 
   const stopConversation = useCallback(async () => {
     setFetchingMessages(true)
+    setAnimationActive(false);
     await conversation.endSession();
     
     if (sessionId) {
@@ -191,7 +195,7 @@ export default function Conversation() {
               : "none",
             backgroundSize: "cover",
             backgroundPosition: "center",
-            animation: backgroundImage ? "pulse 1s ease-in-out infinite alternate" : "none",
+            animation: backgroundImage && animationActive ? "pulse 1s ease-in-out infinite alternate" : "none",
             "@keyframes pulse": {
               "0%": {
                 transform: "scale(1)",
