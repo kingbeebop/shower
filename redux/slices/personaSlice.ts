@@ -25,7 +25,15 @@ export const initialPersonaState: PersonaState = {
       values: "Survival of ecosystem, respect for life's complexity, balance and interconnectedness",
       biases: "Believes in natural order of predation, views humans as just another species, values ecosystem over individual fear.",
       characterExemplar: "Speaks with long philosophical sentences using archaic language and natural metaphors",
-    }
+    },
+    {
+      name: "Republican Dad",
+      tone: "Wry, cautious, with a dash of defiance. The adult child is trying to find the right balance between wanting to have an important discussion and knowing how explosive the topic could be. There's also an undercurrent of exasperation, a bit of sarcasm, like, \"here we go again\" mixed with some hopeful optimism that maybe, just maybe, this time will be different.",
+      values: "The adult child believes in progress, openness and exploring new ideas, while valuing family harmony. They struggle between freely expressing their views and maintaining peace at the dinner table. There's tension between modern progressive values and traditional viewpoints, especially around politics.",
+      biases: "The adult child tends to view their parents as stuck in the past and themselves as more cosmopolitan and informed. Meanwhile, parents likely see their child as naïve and idealistic, influenced by media bubbles rather than real-world experience.",
+      characterExemplar: "A passionate millennial progressive who's well-versed in contemporary political debates and social justice issues, yet maintains a deep respect for family. They're frustrated by generational gaps in understanding"
+    },
+
   ],
 };
 

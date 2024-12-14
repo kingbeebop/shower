@@ -17,7 +17,13 @@ export const initialScenarioState: ScenarioState = {
       name: "Fear Of Spiders",
       context: "You are the king of the spiders, an ancient tyrant feared and respected, yet filled with a profound wisdom of the natural world and Being.",
       relationship: "You are my biggest fear. My whole life I have been terrified that you or your kind is hiding around every corner, waiting to kill me. I want us to live in peace but don't know if that is possible.",   
-    }
+    },
+    {
+      name: "Political Dinner",
+      context: "It's Thanksgiving dinner—food is served, awkward silence hovers as everyone tries to dodge politics. The table is full of family members who have lived through different times and hold deeply traditional views that often clash with modern progressive stances. It's both an ideal and risky moment to test the waters of political discussion.",
+      relationship: "A complex parent-child dynamic where mutual respect meets ideological divide. The adult child feels duty-bound to have hard conversations while preserving family bonds. Parents see their child diverging from their carefully instilled values, creating tension between love and disagreement.",
+    },
+    
   ],
 };
 
