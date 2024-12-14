@@ -1,22 +1,40 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Story, StoryState } from '../../types/Story';
+import { Persona } from '../../types/Persona';  // Assuming Persona types are defined elsewhere
+import { Scenario } from '../../types/Scenario';  // Assuming Scenario types are defined elsewhere
+
+interface Story {
+  persona: Persona;
+  scenario: Scenario;
+  tolerance: number;
+  conversationIds: number[];  // Store conversation ids as numbers
+}
+
+interface StoryState {
+  stories: Story[];
+}
 
 const initialState: StoryState = {
-  story: null,
+  stories: [],
 };
 
 const storySlice = createSlice({
   name: 'story',
   initialState,
   reducers: {
-    setStory(state, action: PayloadAction<Story>) {
-      state.story = action.payload;
+    // Add a new story
+    addStory(state, action: PayloadAction<Story>) {
+      state.stories.push(action.payload);
     },
-    clearStory(state) {
-      state.story = null;
+    // Update a story with a new conversation id (now using number IDs)
+    addConversationToStory(state, action: PayloadAction<{ storyId: number; conversationId: number }>) {
+      const story = state.stories.find((s) => s.persona.id === action.payload.storyId);
+      if (story) {
+        story.conversationIds.push(action.payload.conversationId);
+      }
     },
   },
 });
 
-export const { setStory, clearStory } = storySlice.actions;
+export const { addStory, addConversationToStory } = storySlice.actions;
+
 export default storySlice.reducer;
