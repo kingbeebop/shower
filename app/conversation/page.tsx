@@ -6,6 +6,7 @@ import { useCallback, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useRouter } from 'next/navigation';
+
 const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 
 export default function Conversation() {
@@ -38,7 +39,7 @@ export default function Conversation() {
         overrides: {
           agent: {
             prompt: {
-              prompt: `You are ${currentPersona.name} and you are in the ${currentScenario.name} scenario.`,
+              prompt: `You are ${currentPersona?.name} and you are in the ${currentScenario?.name} scenario.`,
             },
             firstMessage: `Hey`,
           },
@@ -78,10 +79,10 @@ export default function Conversation() {
           }}
         >
           <Typography variant="h5" component="h1">
-            Conversation with {currentPersona.name}
+            Conversation with {currentPersona?.name}
           </Typography>
           <Chip
-            label={currentScenario.name}
+            label={currentScenario?.name}
             color="primary"
             variant="outlined"
           />

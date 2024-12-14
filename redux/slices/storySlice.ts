@@ -3,6 +3,7 @@ import { Persona } from '../../types/Persona';  // Assuming Persona types are de
 import { Scenario } from '../../types/Scenario';  // Assuming Scenario types are defined elsewhere
 
 interface Story {
+  goal: string;
   persona: Persona;
   scenario: Scenario;
   tolerance: number;
