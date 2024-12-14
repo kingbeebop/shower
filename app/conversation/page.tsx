@@ -1,67 +1,116 @@
-import { Box, Container, Typography, Paper, TextField, Button, Avatar, Chip } from '@mui/material';
-import SendIcon from '@mui/icons-material/Send';
+"use client";
+
+import { Box, Container, Typography, Paper, Chip, Button } from "@mui/material";
+import { useConversation } from "@11labs/react";
+import { useCallback } from "react";
+import { useSelector } from "react-redux";
+import { RootState } from "../../redux/store";
+const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 
 export default function Conversation() {
+  const { currentPersona, currentScenario } = useSelector(
+    (state: RootState) => state.conversation
+  );
+
+  const conversation = useConversation({
+    onConnect: () => console.log("Connected"),
+    onDisconnect: () => console.log("Disconnected"),
+    onMessage: (message) => console.log("Message:", message),
+    onError: (error) => console.error("Error:", error),
+  });
+
+  const startConversation = useCallback(async () => {
+    try {
+      // Request microphone permission
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+      // Start the conversation with your agent
+      await conversation.startSession({
+        agentId: AGENT_ID,
+        overrides: {
+          agent: {
+            prompt: {
+              prompt: `You are ${currentPersona.name} and you are in the ${currentScenario.name} scenario.`,
+            },
+            firstMessage: `Hey`,
+          },
+        },
+      });
+    } catch (error) {
+      console.error("Failed to start conversation:", error);
+    }
+  }, [conversation, currentPersona, currentScenario]);
+
+  const stopConversation = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
+
   return (
     <Container maxWidth="md">
-      <Box sx={{ my: 4, height: '100vh', display: 'flex', flexDirection: 'column' }}>
-        <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box
+        sx={{
+          my: 4,
+          height: "100vh",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Box
+          sx={{
+            mb: 2,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+          }}
+        >
           <Typography variant="h5" component="h1">
-            Conversation with Boss
+            Conversation with {currentPersona.name}
           </Typography>
           <Chip
-            label="Negotiating for a raise"
+            label={currentScenario.name}
             color="primary"
             variant="outlined"
           />
         </Box>
 
-        <Paper 
-          sx={{ 
-            flex: 1, 
-            mb: 2, 
-            p: 2, 
-            overflowY: 'auto',
-            display: 'flex',
-            flexDirection: 'column',
-            gap: 2
+        <Paper
+          sx={{
+            flex: 1,
+            mb: 2,
+            p: 2,
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: 2,
           }}
         >
-          {/* Example messages */}
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-            <Avatar>B</Avatar>
-            <Paper sx={{ p: 2, bgcolor: 'grey.100', maxWidth: '80%' }}>
-              <Typography>
-                Hello, what can I help you with today?
-              </Typography>
-            </Paper>
+          <Box sx={{ display: "flex", gap: 2 }}>
+            <Button
+              variant="contained"
+              onClick={startConversation}
+              disabled={conversation.status === "connected"}
+              color="primary"
+            >
+              Start Conversation
+            </Button>
+            <Button
+              variant="contained"
+              onClick={stopConversation}
+              disabled={conversation.status !== "connected"}
+              color="error"
+            >
+              Stop Conversation
+            </Button>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1, alignSelf: 'flex-end' }}>
-            <Paper sx={{ p: 2, bgcolor: 'primary.light', color: 'white', maxWidth: '80%' }}>
-              <Typography>
-                I'd like to discuss my compensation and career growth opportunities.
-              </Typography>
-            </Paper>
+          <Box sx={{ textAlign: "center" }}>
+            <Typography>Status: {conversation.status}</Typography>
+            <Typography>
+              Agent is {conversation.isSpeaking ? "speaking" : "listening"}
+            </Typography>
           </Box>
         </Paper>
-
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <TextField
-            fullWidth
-            placeholder="Type your message..."
-            variant="outlined"
-            multiline
-            maxRows={4}
-          />
-          <Button 
-            variant="contained" 
-            sx={{ minWidth: 'auto', px: 3 }}
-          >
-            <SendIcon />
-          </Button>
-        </Box>
       </Box>
     </Container>
   );
-} 
+}
