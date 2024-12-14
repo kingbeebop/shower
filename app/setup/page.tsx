@@ -6,6 +6,8 @@ import { useDispatch, useSelector } from 'react-redux';
 import { setConversationSetup } from '../../redux/slices/conversationSlice';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { AppDispatch } from '../../redux/store'
+import { RootState } from '../../redux/store';
 
 const personas = [
   'Boss',
@@ -26,8 +28,11 @@ const scenarios = [
 ];
 
 export default function Setup() {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch() as AppDispatch
   const router = useRouter();
+  const personas  = useSelector((state: RootState) => state.persona.personas )
+  const [newPersonaModal, setNewPersonaModal] = useState(false)
+  const [newScenarioModal, setNewScenarioModal] = useState(false)
   
   const [formState, setFormState] = useState({
     persona: '',
@@ -84,6 +89,11 @@ export default function Setup() {
                 onChange={handleChange('persona')}
                 label="Select Persona"
               >
+                <MenuItem
+                  onClick={() => setNewPersonaModal(true)}
+                >
+                  + New Persona
+                </MenuItem>
                 {personas.map((persona) => (
                   <MenuItem key={persona} value={persona}>
                     {persona}
@@ -102,6 +112,9 @@ export default function Setup() {
                 onChange={handleChange('scenario')}
                 label="Select Scenario"
               >
+                <MenuItem onClick={() => setNewScenarioModal(true)}>
+                  + New Menu Item
+                </MenuItem>
                 {scenarios.map((scenario) => (
                   <MenuItem key={scenario} value={scenario}>
                     {scenario}
