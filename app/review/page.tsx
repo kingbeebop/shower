@@ -22,6 +22,7 @@ import { getAnswerFromOpenAI } from './functions';
 import ReactMarkdown from 'react-markdown'
 
 export default function Review() {
+  const dispatch = useDispatch() as AppDispatch;
   const conversation = useSelector((state: RootState) => state.conversation);
 
   const [reviewData, setReviewData] = useState({
