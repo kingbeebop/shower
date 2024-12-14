@@ -16,6 +16,7 @@
     "@mui/material": "^6.2.0",
     "@mui/material-nextjs": "^6.2.0",
     "@reduxjs/toolkit": "^2.5.0",
+    "axios": "^1.7.9",
     "next": "15.1.0",
     "openai": "^4.76.3",
     "react": "^19.0.0",
