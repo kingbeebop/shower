@@ -1,5 +1,10 @@
+'use client'
+
+import { useState } from 'react'
 import { Box, Container, Typography, Stepper, Step, StepLabel, Card, CardContent, FormControl, InputLabel, Select, MenuItem, TextField, Button } from '@mui/material';
 import Link from 'next/link';
+import PersonaModal from '../../components/modals/PersonaModal'
+import ScenarioModal from '@/components/modals/ScenarioModal';
 
 const personas = [
   'Boss',
@@ -20,8 +25,23 @@ const scenarios = [
 ];
 
 export default function Setup() {
+
+   // State variables to manage modal visibility
+   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
+ 
+   // Handle opening and closing of Persona Modal
+   const handleOpenPersona = () => setIsPersonaModalOpen(true);
+   const handleClosePersona = () => setIsPersonaModalOpen(false);
+ 
+   // Handle opening and closing of Scenario Modal
+   const handleOpenScenario = () => setIsScenarioModalOpen(true);
+   const handleCloseScenario = () => setIsScenarioModalOpen(false);
+
   return (
     <Container maxWidth="md">
+      <PersonaModal closeModal={handleClosePersona}></PersonaModal>
+      <ScenarioModal closeModal={handleCloseScenario}></ScenarioModal>
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom textAlign="center">
           Setup Your Conversation
