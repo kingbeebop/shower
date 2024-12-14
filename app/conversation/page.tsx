@@ -46,6 +46,7 @@ export default function Conversation() {
       });
     } catch (error) {
       console.error("Failed to start conversation:", error);
+      alert('Failed to start conversation. Please try again later.');
     }
   }, [conversation, currentPersona, currentScenario]);
 
