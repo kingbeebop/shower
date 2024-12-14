@@ -184,6 +184,22 @@ export default function Conversation() {
             display: "flex",
             flexDirection: "column",
             overflowY: "auto",
+            justifyContent: fetchingMessages ? "center" : "flex-start",
+            alignItems: fetchingMessages ? "center" : "stretch",
+            backgroundImage: backgroundImage
+              ? `url(${backgroundImage})`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            animation: backgroundImage ? "pulse 1s ease-in-out infinite alternate" : "none",
+            "@keyframes pulse": {
+              "0%": {
+                transform: "scale(1)",
+              },
+              "100%": {
+                transform: "scale(1.1)",
+              },
+            },
           }}
         >
           {/* Messages display */}

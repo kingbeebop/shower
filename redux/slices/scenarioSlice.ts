@@ -9,6 +9,11 @@ export const initialScenarioState: ScenarioState = {
       relationship: "Professional yet collaborative. The relationship is rooted in mutual respect, but there is a bit of distance because the boss holds the purse strings. The boss trusts the employee's competence but may not fully see the value in investing more just yet. There's an underlying sense of understanding but also the tension of hierarchy.",
     },
     {
+      name: "Asking For A Raise (Hostile Environment)",
+      context: "The company is making record profits, but the boss consistently deflects or dismisses compensation discussions. The employee has been working overtime, picking up slack from three people who quit, and hasn't seen a raise in two years despite inflation. Every conversation about money turns into a lecture about 'being grateful to have a job' or accusations of 'not being a team player.'",
+      relationship: "Tense and adversarial. Any attempt at professional dialogue is met with intimidation tactics or passive-aggressive comments about loyalty. The boss views raise requests as personal betrayals and uses past 'favors' (like allowing sick days or standard time off) as ammunition against the employee. There's an underlying threat that asking for more money could lead to retaliation or being labeled as 'difficult.'",
+    },
+    {
       name: "Breaking Up",
       context: "The breakup happens after a long period of growing distance, with moments of connection giving way to emotional drift, where neither person is blameless but both have realized they're no longer the right fit, taking place in a neutral, quiet space that reflects the weight of the decision.",
    relationship: "While deep emotions and countless memories have been shared, there's recognition of no longer being the best partners, with both parties having changed, where the breaking up partner acts out of deep care rather than bitterness, hoping for eventual friendship while acknowledging that will take time.",

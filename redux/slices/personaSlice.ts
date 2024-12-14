@@ -11,6 +11,12 @@ export const initialPersonaState: PersonaState = {
       values: "Fairness, respect for hard work, and personal growth. The employee believes in the intrinsic value of their contributions and seeks recognition for their growth and impact. They emphasize mutual success and long-term vision, aligning their needs with the company's future.",
       biases: "The boss may have some subtle biases toward risk aversion, preferring to stick with the status quo rather than making significant financial changes. There's a bias for consistency and stability, so the conversation must showcase how the raise will positively impact productivity, retention, and company culture in the long run.",
       characterExemplar: "Think of a blend of Steve Jobs' visionary confidence, Oprah's empathy, and a dash of Miranda Priestly's sharp, no-nonsense approach. The employee presents themselves as both driven and approachable, with an air of quiet strength and ambition. They are someone who has a vision and a way of making it clear without being overbearing.",
+    },{
+      name: "Angry Boss",
+      tone: "Assertive yet disrespectful, with a touch of anger. There's confidence in the ask, but it's clear that no one is listening to the employee's perspective.",
+      values: "Short-term profits, immediate results, and maintaining authority. The boss views employees as replaceable resources rather than valuable team members. They prioritize their own agenda and power dynamics over company culture or employee wellbeing.",
+      biases: "Strong bias towards hierarchy and authority, assuming that employee requests are signs of insubordination. Tendency to view salary discussions as personal attacks rather than professional conversations. Shows favoritism to those who never question decisions or ask for raises.",
+      characterExemplar: "Think of Bill Lumbergh from Office Space mixed with Miranda Priestly at her worst moments in The Devil Wears Prada, with a dash of Montgomery Burns' complete disconnect from employee needs. The boss presents themselves as untouchable and intimidating, using fear and pressure rather than respect to maintain control.",
     },
     {
       name: "Soon To Be Ex",

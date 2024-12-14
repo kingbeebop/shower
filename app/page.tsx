@@ -84,7 +84,7 @@ export default function Home() {
               WebkitTextFillColor: 'transparent'
             }}
           >
-            Shower Exposure
+            🚿 Shower Exposure
           </Typography>
           <Typography variant="h5" color="text.secondary" paragraph>
             Become who you want to be through simulated conversations
