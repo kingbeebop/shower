@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { RootState } from "../../redux/store";
 import { useRouter } from 'next/navigation';
 import { startConversation as startConversationUtil } from "../utils/conversation";
+import { generateImage } from "./functions";
 
 const AGENT_ID = process.env.NEXT_PUBLIC_AGENT_ID || "";
 const API_KEY = process.env.NEXT_PUBLIC_ELEVEN_LABS_API_KEY || "";
@@ -77,6 +78,7 @@ export default function Conversation() {
     (state: RootState) => state.story
   );
   const [fetchingMessages, setFetchingMessages] = useState(false)
+  const [backgroundImage, setBackgroundImage] = useState<string | null>(null);
 
   const conversation = useConversation({
     onConnect: () => console.log("Connected"),
@@ -104,7 +106,12 @@ export default function Conversation() {
   }, [currentStory, router]);
 
   useEffect(() => {
-    console.log(fetchingMessages)
+    async function setImage() {
+      const imageUrl = await generateImage('Generate an image of ' + currentStory?.persona.name + '. Tone of characater: ' + currentStory?.persona.tone + '. Story: ' + currentStory?.scenario.name + '. story description' + currentStory?.scenario.context);
+      console.log("background image")
+      setBackgroundImage(imageUrl);
+    }
+    setImage()
   }, [])
 
   const startConversation = useCallback(async () => {
@@ -191,8 +198,14 @@ export default function Conversation() {
     overflowY: "auto",
     justifyContent: fetchingMessages ? "center" : "flex-start", // Center content when fetching
     alignItems: fetchingMessages ? "center" : "stretch", // Align horizontally to center when fetching
+    backgroundImage: backgroundImage
+              ? `url(${backgroundImage})`
+              : "none",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
   }}
 >
+  
   {fetchingMessages ? (
     <Box
       sx={{
@@ -209,7 +222,8 @@ export default function Conversation() {
       </Typography>
     </Box>
   ) : (
-    <Box sx={{ flex: 1, mb: 2 }}>
+    // Background of this box should be generated dalle image
+    <Box sx={{ flex: 1, mb: 2 }} >
       {messages.map((msg, index) => (
         <Box
           key={index}
