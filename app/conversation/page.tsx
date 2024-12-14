@@ -107,12 +107,12 @@ export default function Conversation() {
 
   useEffect(() => {
     async function setImage() {
-      const imageUrl = await generateImage('Generate an image of ' + currentStory?.persona.name + '. Tone of characater: ' + currentStory?.persona.tone + '. Story: ' + currentStory?.scenario.name + '. story description' + currentStory?.scenario.context);
+      const imageUrl = await generateImage('We want a frontal facing image of the character. Generate an image of the character' + currentStory?.persona.name + '. Tone of characater: ' + currentStory?.persona.tone + '. Story: ' + currentStory?.scenario.name + '. story description' + currentStory?.scenario.context);
       console.log("background image")
       setBackgroundImage(imageUrl);
     }
     setImage()
-  }, [])
+  }, [currentStory])
 
   const startConversation = useCallback(async () => {
     try {
