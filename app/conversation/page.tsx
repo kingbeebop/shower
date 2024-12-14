@@ -107,7 +107,7 @@ export default function Conversation() {
 
   useEffect(() => {
     async function setImage() {
-      const imageUrl = await generateImage('We want a frontal facing image of the character. Generate an image of the character' + currentStory?.persona.name + '. Tone of characater: ' + currentStory?.persona.tone + '. Story: ' + currentStory?.scenario.name + '. story description' + currentStory?.scenario.context);
+      const imageUrl = await generateImage('We want a frontal facing image of the character. Generate an image of the character' + currentStory?.persona.name);
       console.log("background image")
       setBackgroundImage(imageUrl);
     }
