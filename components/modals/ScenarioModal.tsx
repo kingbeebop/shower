@@ -6,12 +6,14 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } 
 import { useDispatch } from 'react-redux';
 import { addScenario } from '../../redux/slices/scenarioSlice';
 import { AppDispatch } from '../../redux/store';
+import { Scenario } from '../../types/Scenario'
 
 interface ScenarioModalProps {
   closeModal: () => void; // Close modal function passed as a prop
+  setScenario: (scenario: Scenario) => void
 }
 
-const ScenarioModal = ({ closeModal }: ScenarioModalProps) => {
+const ScenarioModal = ({ closeModal, setScenario }: ScenarioModalProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState<string>('');
@@ -27,7 +29,7 @@ const ScenarioModal = ({ closeModal }: ScenarioModalProps) => {
     // Create a new scenario object and dispatch to Redux
     const newScenario = { name, description };
     dispatch(addScenario(newScenario));  // Dispatch addScenario action
-
+    setScenario(newScenario)
     // Close the modal after submitting
     closeModal();
     resetForm();

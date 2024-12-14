@@ -26,15 +26,15 @@ const storySlice = createSlice({
       state.stories.push(action.payload);
     },
     // Update a story with a new conversation id (now using number IDs)
-    addConversationToStory(state, action: PayloadAction<{ storyId: number; conversationId: number }>) {
-      const story = state.stories.find((s) => s.persona.id === action.payload.storyId);
-      if (story) {
-        story.conversationIds.push(action.payload.conversationId);
-      }
-    },
+    // addConversationToStory(state, action: PayloadAction<{ storyId: number; conversationId: number }>) {
+    //   const story = state.stories.find((s) => s.persona.id === action.payload.storyId);
+    //   if (story) {
+    //     story.conversationIds.push(action.payload.conversationId);
+    //   }
+    // },
   },
 });
 
-export const { addStory, addConversationToStory } = storySlice.actions;
+export const { addStory  } = storySlice.actions;
 
 export default storySlice.reducer;

@@ -1,4 +1,7 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { Persona } from '../../types/Persona'
+import { Scenario } from '../../types/Scenario'
+
 
 interface Message {
   id: string;
@@ -10,14 +13,8 @@ interface Message {
 
 interface ConversationState {
   messages: Message[];
-  currentPersona: {
-    name: string;
-    type: string;
-  };
-  currentScenario: {
-    name: string;
-    type: string;
-  };
+  currentPersona: Persona | null;
+  currentScenario: Scenario | null;
   goal: string;
   isActive: boolean;
   isRecording: boolean;
@@ -27,14 +24,8 @@ interface ConversationState {
 
 const initialState: ConversationState = {
   messages: [],
-  currentPersona: {
-    name: '',
-    type: ''
-  },
-  currentScenario: {
-    name: '',
-    type: ''
-  },
+  currentPersona: null,
+  currentScenario: null,
   goal: '',
   isActive: false,
   isRecording: false,
@@ -49,8 +40,8 @@ const conversationSlice = createSlice({
     setConversationSetup: (
       state,
       action: PayloadAction<{
-        persona: { name: string; type: string };
-        scenario: { name: string; type: string };
+        persona: Persona;
+        scenario: Scenario;
         goal: string;
       }>
     ) => {

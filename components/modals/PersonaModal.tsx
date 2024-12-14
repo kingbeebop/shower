@@ -6,12 +6,14 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, TextField, Button } 
 import { useDispatch } from 'react-redux';
 import { addPersona } from '../../redux/slices/personaSlice';
 import { AppDispatch } from '../../redux/store';
+import { Persona } from '../../types/Persona'
 
 interface ModalPersonaProps {
   closeModal: () => void; // Close modal function passed as a prop
+  setPersona: (persona: Persona) => void;
 }
 
-const PersonaModal = ({ closeModal }: ModalPersonaProps) => {
+const PersonaModal = ({ closeModal, setPersona }: ModalPersonaProps) => {
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [error, setError] = useState<string>('');
@@ -25,7 +27,7 @@ const PersonaModal = ({ closeModal }: ModalPersonaProps) => {
 
     const newPersona = { name, description };
     dispatch(addPersona(newPersona));  // Dispatch addPersona action
-
+    setPersona(newPersona)
     // Close the modal after submitting
     closeModal();
     resetForm();

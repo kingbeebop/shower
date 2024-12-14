@@ -1,88 +1,92 @@
 "use client";
 
-import { Box, Container, Typography, Stepper, Step, StepLabel, Card, CardContent, FormControl, InputLabel, Select, MenuItem, TextField, Button } from '@mui/material';
+import {
+  Box,
+  Container,
+  Typography,
+  Stepper,
+  Step,
+  StepLabel,
+  Card,
+  CardContent,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  TextField,
+  Button
+} from '@mui/material';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { setConversationSetup } from '../../redux/slices/conversationSlice';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { AppDispatch } from '../../redux/store'
+import { AppDispatch } from '../../redux/store';
 import { RootState } from '../../redux/store';
+import { Persona } from '../../types/Persona';
+import { Scenario } from '../../types/Scenario';
 import PersonaModal from '@/components/modals/PersonaModal';
 import ScenarioModal from '@/components/modals/ScenarioModal';
 
-const personas = [
-  'Boss',
-  'Ex partner',
-  'Current partner',
-  'Parent',
-  'Sibling',
-  'Friend',
-  'Colleague',
-  'Customer'
-];
-
-const scenarios = [
-  'Negotiating for a raise',
-  'Making an investment',
-  'Resolving an argument',
-  'Discussing a political topic'
-];
-
 export default function Setup() {
+  // State variables to manage modal visibility
+  const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
+  const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
 
+  // State variables for form fields
+  const [selectedPersona, setSelectedPersona] = useState<Persona | null>(null);
+  const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
+  const [goal, setGoal] = useState<string>('');
 
-   // State variables to manage modal visibility
-   const [isPersonaModalOpen, setIsPersonaModalOpen] = useState(false);
-   const [isScenarioModalOpen, setIsScenarioModalOpen] = useState(false);
- 
-   // Handle opening and closing of Persona Modal
-   const handleOpenPersona = () => setIsPersonaModalOpen(true);
-   const handleClosePersona = () => setIsPersonaModalOpen(false);
- 
-   // Handle opening and closing of Scenario Modal
-   const handleOpenScenario = () => setIsScenarioModalOpen(true);
-   const handleCloseScenario = () => setIsScenarioModalOpen(false);
+  // Handle opening and closing of Persona Modal
+  const handleOpenPersona = () => setIsPersonaModalOpen(true);
+  const handleClosePersona = () => setIsPersonaModalOpen(false);
 
-  const dispatch = useDispatch() as AppDispatch
+  // Handle opening and closing of Scenario Modal
+  const handleOpenScenario = () => setIsScenarioModalOpen(true);
+  const handleCloseScenario = () => setIsScenarioModalOpen(false);
+
+  const dispatch = useDispatch() as AppDispatch;
   const router = useRouter();
-  const personas  = useSelector((state: RootState) => state.persona.personas )
+  const personasList = useSelector((state: RootState) => state.persona.personas);
+  const scenariosList = useSelector((state: RootState) => state.scenario.scenarios);
 
-  const [formState, setFormState] = useState({
-    persona: {
-        name: '',
-        type: ''
-    },
-    scenario: {
-        name: '',
-        type: ''
-    },
-    goal: ''
-  });
-
-  const handleChange = (field: string) => (event: any) => {
-    setFormState(prev => ({
-      ...prev,
-      [field]: event.target.value
-    }));
+  // Handle form field changes for goal
+  const handleGoalChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setGoal(event.target.value);
   };
 
+  // Set Persona from modal
+  const setPersona = (persona: Persona) => {
+    setSelectedPersona(persona);
+    handleClosePersona(); // Close the modal after selection
+  };
+
+  // Set Scenario from modal
+  const setScenario = (scenario: Scenario) => {
+    setSelectedScenario(scenario);
+    handleCloseScenario(); // Close the modal after selection
+  };
+
+  // Handle form submission
   const handleSubmit = () => {
-    dispatch(setConversationSetup({
-        persona: formState.persona,
-        scenario: formState.scenario,
-        goal: formState.goal
-    }));
-    router.push('/conversation');
+    if (selectedPersona && selectedScenario && goal.trim()) {
+      dispatch(setConversationSetup({
+        persona: selectedPersona,
+        scenario: selectedScenario,
+        goal
+      }));
+      router.push('/conversation');
+    }
   };
 
-  const isFormValid = formState.persona && formState.scenario && formState.goal;
-
+  // Validation to check if the form is filled correctly
+  const isFormValid = selectedPersona && selectedScenario && goal.trim() !== '';
 
   return (
     <Container maxWidth="md">
-      {isPersonaModalOpen && <PersonaModal closeModal={handleClosePersona}></PersonaModal>}
-      {isScenarioModalOpen && <ScenarioModal closeModal={handleCloseScenario}></ScenarioModal>}
+      {isPersonaModalOpen && <PersonaModal closeModal={handleClosePersona} setPersona={setPersona} />}
+      {isScenarioModalOpen && <ScenarioModal closeModal={handleCloseScenario} setScenario={setScenario} />}
       <Box sx={{ my: 4 }}>
         <Typography variant="h4" component="h1" gutterBottom textAlign="center">
           Setup Your Conversation
@@ -108,16 +112,14 @@ export default function Setup() {
             <FormControl fullWidth sx={{ mb: 3 }}>
               <InputLabel>Select Persona</InputLabel>
               <Select
-                value={formState.persona}
-                onChange={handleChange('persona')}
+                value={selectedPersona ? selectedPersona.name : ''}
+                onChange={(e) => setSelectedPersona(personasList.find(p => p.name === e.target.value) || null)}
                 label="Select Persona"
               >
-                <MenuItem
-                  onClick={() => handleOpenPersona()}
-                >
+                <MenuItem onClick={handleOpenPersona}>
                   + New Persona
                 </MenuItem>
-                {personas.map((persona) => (
+                {personasList.map((persona) => (
                   <MenuItem key={persona.name} value={persona.name}>
                     {persona.name}
                   </MenuItem>
@@ -131,16 +133,16 @@ export default function Setup() {
             <FormControl fullWidth sx={{ mb: 3 }}>
               <InputLabel>Select Scenario</InputLabel>
               <Select
-                value={formState.scenario}
-                onChange={handleChange('scenario')}
+                value={selectedScenario ? selectedScenario.name : ''}
+                onChange={(e) => setSelectedScenario(scenariosList.find(s => s.name === e.target.value) || null)}
                 label="Select Scenario"
               >
-                <MenuItem onClick={() => handleOpenScenario()}>
-                  + New Menu Item
+                <MenuItem onClick={handleOpenScenario}>
+                  + New Scenario
                 </MenuItem>
-                {scenarios.map((scenario) => (
-                  <MenuItem key={scenario} value={scenario}>
-                    {scenario}
+                {scenariosList.map((scenario) => (
+                  <MenuItem key={scenario.name} value={scenario.name}>
+                    {scenario.name}
                   </MenuItem>
                 ))}
               </Select>
@@ -153,8 +155,8 @@ export default function Setup() {
               fullWidth
               multiline
               rows={3}
-              value={formState.goal}
-              onChange={handleChange('goal')}
+              value={goal}
+              onChange={handleGoalChange}
               placeholder="Describe what you want to achieve from this conversation..."
               sx={{ mb: 3 }}
             />
@@ -177,4 +179,4 @@ export default function Setup() {
       </Box>
     </Container>
   );
-} 
+}
