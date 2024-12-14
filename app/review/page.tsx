@@ -22,7 +22,6 @@ import { getAnswerFromOpenAI } from './functions';
 import ReactMarkdown from 'react-markdown'
 
 export default function Review() {
-  const dispatch = useDispatch() as AppDispatch;
   const conversation = useSelector((state: RootState) => state.conversation);
 
   const [reviewData, setReviewData] = useState({
@@ -86,22 +85,6 @@ export default function Review() {
       console.error('Error fetching review from OpenAI:', error);
     }
   };
-  
-
-  useEffect(()=> {
-    dispatch(addMessage(
-        {
-        text: "hello",
-        sender: "persona"
-    }
-    ))
-    dispatch(addMessage(
-        {
-        text: "hello there user",
-        sender: "user"
-    }
-    ))
-  }, [])
 
   return (
     <Box sx={{ padding: 2 }}>
