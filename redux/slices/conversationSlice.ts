@@ -1,42 +1,72 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
 
-interface Conversation {
+interface Message {
   id: string;
-  messages: string[];
+  text: string;
+  sender: 'user' | 'persona';
+  timestamp: number;
 }
 
 interface ConversationState {
-  conversations: Conversation[];
+  messages: Message[];
+  currentPersona: string;
+  currentScenario: string;
+  goal: string;
+  isActive: boolean;
 }
 
 const initialState: ConversationState = {
-  conversations: [],
+  messages: [],
+  currentPersona: '',
+  currentScenario: '',
+  goal: '',
+  isActive: false,
 };
 
 const conversationSlice = createSlice({
   name: 'conversation',
   initialState,
   reducers: {
-    // Add a new conversation
-    addConversation(state, action: PayloadAction<Conversation>) {
-      state.conversations.push(action.payload);
+    setConversationSetup: (
+      state,
+      action: PayloadAction<{
+        persona: string;
+        scenario: string;
+        goal: string;
+      }>
+    ) => {
+      state.currentPersona = action.payload.persona;
+      state.currentScenario = action.payload.scenario;
+      state.goal = action.payload.goal;
+      state.isActive = true;
+      state.messages = [];
     },
-    // Add a message to an existing conversation
-    addMessage(state, action: PayloadAction<{ conversationId: string; message: string }>) {
-      const conversation = state.conversations.find(
-        (conv) => conv.id === action.payload.conversationId
-      );
-      if (conversation) {
-        conversation.messages.push(action.payload.message);
-      }
+    addMessage: (
+      state,
+      action: PayloadAction<{
+        text: string;
+        sender: 'user' | 'persona';
+      }>
+    ) => {
+      state.messages.push({
+        id: Date.now().toString(),
+        text: action.payload.text,
+        sender: action.payload.sender,
+        timestamp: Date.now(),
+      });
     },
-    // Set all conversations
-    setConversations(state, action: PayloadAction<Conversation[]>) {
-      state.conversations = action.payload;
+    endConversation: (state) => {
+      state.isActive = false;
     },
+    resetConversation: () => initialState,
   },
 });
 
-export const { addConversation, addMessage, setConversations } = conversationSlice.actions;
+export const {
+  setConversationSetup,
+  addMessage,
+  endConversation,
+  resetConversation,
+} = conversationSlice.actions;
 
 export default conversationSlice.reducer;

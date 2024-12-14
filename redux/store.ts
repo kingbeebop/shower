@@ -3,6 +3,7 @@ import authReducer from './slices/authSlice';
 import personaReducer from './slices/personaSlice';
 import scenarioReducer from './slices/scenarioSlice';
 import storyReducer from './slices/storySlice';
+import conversationReducer from './slices/conversationSlice';
 
 const store = configureStore({
   reducer: {
@@ -10,6 +11,7 @@ const store = configureStore({
     persona: personaReducer,
     scenario: scenarioReducer,
     story: storyReducer,
+    conversation: conversationReducer,
   },
 });
 
