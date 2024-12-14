@@ -1,43 +1,127 @@
 'use client'
 
-import { Box, Container, Typography, Paper, TextField, Button, Avatar, Chip } from '@mui/material';
+import { Box, Container, Typography, Paper, TextField, Button, Avatar, Chip, IconButton } from '@mui/material';
 import SendIcon from '@mui/icons-material/Send';
+import MicIcon from '@mui/icons-material/Mic';
+import StopIcon from '@mui/icons-material/Stop';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../../redux/store';
-import { addMessage } from '../../redux/slices/conversationSlice';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { addMessage, setRecordingState, setProcessingState, setPlayingState } from '../../redux/slices/conversationSlice';
+import { useState, useRef } from 'react';
+import { AudioRecorder, AudioProcessor } from '../../services/audioService';
 
 export default function Conversation() {
   const dispatch = useDispatch();
-  const router = useRouter();
   const [newMessage, setNewMessage] = useState('');
+  const audioRecorder = useRef(new AudioRecorder());
   
-  const { currentPersona, currentScenario, messages } = useSelector(
-    (state: RootState) => state.conversation
-  );
+  const { 
+    currentPersona, 
+    currentScenario, 
+    messages,
+    isRecording,
+    isProcessing,
+    isPlaying 
+  } = useSelector((state: RootState) => state.conversation);
 
-  // Redirect if no persona or scenario is selected
-  if (!currentPersona || !currentScenario) {
-    router.push('/setup');
-    return null;
-  }
+  const handleStartRecording = async () => {
+    try {
+      await audioRecorder.current.startRecording();
+      dispatch(setRecordingState(true));
+    } catch (error) {
+      console.error('Failed to start recording:', error);
+    }
+  };
 
-  const handleSendMessage = () => {
+  const handleStopRecording = async () => {
+    try {
+      dispatch(setRecordingState(false));
+      dispatch(setProcessingState(true));
+      
+      // Get the audio blob from the recorder
+      const audioBlob = await audioRecorder.current.stopRecording();
+      
+      // Convert speech to text
+      const text = await AudioProcessor.convertSpeechToText(audioBlob);
+      
+      // Add user's message
+      dispatch(addMessage({
+        text,
+        sender: 'user'
+      }));
+
+      // Generate AI response
+      const aiResponse = await AudioProcessor.generateAIResponse(
+        text,
+        currentPersona.name,
+        currentScenario.name
+      );
+
+      // Convert AI response to speech
+      const audioUrl = await AudioProcessor.convertTextToSpeech(aiResponse);
+      
+      // Add AI's message
+      dispatch(addMessage({
+        text: aiResponse,
+        sender: 'persona',
+        audioUrl
+      }));
+
+      dispatch(setProcessingState(false));
+      dispatch(setPlayingState(true));
+      
+      // Play the audio
+      await AudioProcessor.playAudio(audioUrl);
+      
+      dispatch(setPlayingState(false));
+    } catch (error) {
+      console.error('Error processing audio:', error);
+      dispatch(setProcessingState(false));
+      dispatch(setPlayingState(false));
+    }
+  };
+
+  const handleSendMessage = async () => {
     if (newMessage.trim()) {
+      dispatch(setProcessingState(true));
+      
+      // Add user's message
       dispatch(addMessage({
         text: newMessage.trim(),
         sender: 'user'
       }));
       setNewMessage('');
       
-      // Simulate persona response (you can replace this with actual AI response later)
-      setTimeout(() => {
+      try {
+        // Generate AI response
+        const aiResponse = await AudioProcessor.generateAIResponse(
+          newMessage.trim(),
+          currentPersona.name,
+          currentScenario.name
+        );
+
+        // Convert to speech
+        const audioUrl = await AudioProcessor.convertTextToSpeech(aiResponse);
+        
+        // Add AI's message
         dispatch(addMessage({
-          text: "I understand your request. Let's discuss this further.",
-          sender: 'persona'
+          text: aiResponse,
+          sender: 'persona',
+          audioUrl
         }));
-      }, 1000);
+
+        dispatch(setProcessingState(false));
+        dispatch(setPlayingState(true));
+        
+        // Play the audio
+        await AudioProcessor.playAudio(audioUrl);
+        
+        dispatch(setPlayingState(false));
+      } catch (error) {
+        console.error('Error generating response:', error);
+        dispatch(setProcessingState(false));
+        dispatch(setPlayingState(false));
+      }
     }
   };
 
@@ -53,10 +137,10 @@ export default function Conversation() {
       <Box sx={{ my: 4, height: '100vh', display: 'flex', flexDirection: 'column' }}>
         <Box sx={{ mb: 2, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Typography variant="h5" component="h1">
-            Conversation with {currentPersona}
+            Conversation with {currentPersona.name}
           </Typography>
           <Chip
-            label={currentScenario}
+            label={currentScenario.name}
             color="primary"
             variant="outlined"
           />
@@ -84,7 +168,7 @@ export default function Conversation() {
               }}
             >
               {message.sender === 'persona' && (
-                <Avatar>{currentPersona[0]}</Avatar>
+                <Avatar>{currentPersona.name[0]}</Avatar>
               )}
               <Paper 
                 sx={{ 
@@ -103,6 +187,13 @@ export default function Conversation() {
         </Paper>
 
         <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton 
+            color={isRecording ? "error" : "primary"}
+            onClick={isRecording ? handleStopRecording : handleStartRecording}
+            disabled={isProcessing || isPlaying}
+          >
+            {isRecording ? <StopIcon /> : <MicIcon />}
+          </IconButton>
           <TextField
             fullWidth
             value={newMessage}
@@ -112,11 +203,12 @@ export default function Conversation() {
             variant="outlined"
             multiline
             maxRows={4}
+            disabled={isRecording || isProcessing || isPlaying}
           />
           <Button 
             variant="contained" 
             onClick={handleSendMessage}
-            disabled={!newMessage.trim()}
+            disabled={!newMessage.trim() || isRecording || isProcessing || isPlaying}
             sx={{ minWidth: 'auto', px: 3 }}
           >
             <SendIcon />
